@@ -1,0 +1,89 @@
+.exact-celebration {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  /* Background gradient */
+  .exact-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(67, 56, 202, 0.2) 0%, transparent 100%);
+    animation: exactBgFadeIn 0.3s ease;
+  }
+  
+  @keyframes exactBgFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Title container */
+  .exact-title-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Animated gradient title */
+  .exact-title {
+    font-size: 4rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #a855f7, #ec4899, #eab308);
+    background-size: 200% 200%;
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.15));
+    animation: exactGradientMove 3s linear infinite;
+    will-change: background-position;
+  }
+  
+  @keyframes exactGradientMove {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+  }
+  
+  /* Firework burst - each particle positioned individually */
+  .exact-firework {
+    position: absolute;
+  }
+  
+  /* Individual particle with exact radial animation */
+  .exact-particle {
+    position: absolute;
+    left: 0;
+    top: 0;
+    animation: exactParticleBurst 1.2s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  /* Exact same burst animation as Framer Motion */
+  @keyframes exactParticleBurst {
+    0% {
+      transform: translate(0, 0) scale(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(
+        calc(var(--exactX) * 1px),
+        calc(var(--exactY) * 1px)
+      ) scale(0.3);
+      opacity: 0;
+    }
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .exact-title {
+      font-size: 2.5rem;
+    }
+  }
+  

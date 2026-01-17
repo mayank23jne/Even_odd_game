@@ -1,0 +1,57 @@
+[
+  {
+    "id": "g201",
+    "level": 1,
+    "question_text": "Which is the odd one?",
+    "option1": "https://i.pinimg.com/236x/6e/90/df/6e90df9a0b21e9b2f17a061be5042141.jpg",
+    "option2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsgYy4tINJ3g6FZhcBvnwqcI1Aa0BliSJPWA&s",
+    "option3": "https://i.pinimg.com/474x/1d/d3/69/1dd369978c810ee43ec81d40d097672a.jpg",
+    "option4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp7vkXMq7mZFRqRfEYW5f_eSFLDeqtaNYCCQ&s",
+    "answer": "option3",
+    "explanation": "Only car."
+  },
+  {
+    "id": "g205",
+    "level": 1,
+    "question_text": "Find the odd one out.",
+    "option1": "https://images.unsplash.com/photo-1662370761575-05ff1ee40d7d?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8N3x8dmVnZXRhYmxlc3xlbnwwfHwwfHx8MA%3D%3D",
+    "option2": "https://plus.unsplash.com/premium_photo-1663844169550-7fa698a59231?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8MTN8fHZlZ2V0YWJsZXN8ZW58MHx8MHx8fDA%3D",
+    "option3": "https://images.unsplash.com/photo-1510627498534-cf7e9002facc?w=500&auto=format&fit=crop&q=60&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8Mjd8fHZlZ2V0YWJsZXN8ZW58MHx8MHx8fDA%3D",
+    "option4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQjhmuB6-plGEh_m7ipYTFkjNJ8jY9vGz8Ytbf4HpPnyGbkZQxVcz-y&usqp=CAE&s",
+    "answer": "option4",
+    "explanation": ""
+  },
+  {
+    "id": "g10",
+    "level": 2,
+    "question_text": "Identify the odd one",
+    "option1": "Chair",
+    "option2": "Table",
+    "option3": "Sofa",
+    "option4": "Pen",
+    "answer": "option4",
+    "explanation": "Pen is not furniture."
+  },
+  {
+    "id": "g11",
+    "level": 2,
+    "question_text": "Pick the odd one out",
+    "option1": "Shirt",
+    "option2": "Socks",
+    "option3": "Tie",
+    "option4": "Spoon",
+    "answer": "option4",
+    "explanation": "Spoon is not a piece of clothing."
+  },
+  {
+    "id": "g12",
+    "level": 3,
+    "question_text": "Which is different?",
+    "option1": "Car",
+    "option2": "Bus",
+    "option3": "Bike",
+    "option4": "Tree",
+    "answer": "option4",
+    "explanation": "Tree is not a vehicle."
+  }
+]

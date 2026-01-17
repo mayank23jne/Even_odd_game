@@ -1,0 +1,300 @@
+.level-change-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(251, 146, 60, 0.15) 0%, rgba(0, 0, 0, 0.3) 80%);
+    animation: lca-fade-in 0.25s ease-out;
+  }
+  
+  @keyframes lca-fade-in {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Expanding rings */
+  .lca-rings {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  .lca-ring {
+    position: absolute;
+    border-radius: 999px;
+    border-style: solid;
+    border-width: 4px;
+    opacity: 0;
+    animation: lca-ring-expand 1.5s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  .lca-ring-0 { border-color: #f97316; animation-delay: 0s; }
+  .lca-ring-1 { border-color: #ea580c; animation-delay: 0.2s; }
+  .lca-ring-2 { border-color: #fb923c; animation-delay: 0.4s; }
+  
+  @keyframes lca-ring-expand {
+    0% {
+      width: 100px;
+      height: 100px;
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.5;
+    }
+    100% {
+      width: 600px;
+      height: 600px;
+      opacity: 0;
+    }
+  }
+  
+  /* Rockets container */
+  .lca-rocket {
+    position: absolute;
+    transform: translateX(-50%);
+    animation: lca-rocket-flight 2.2s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+    will-change: transform, opacity;
+  }
+  
+  /* y: 100vh -> 45vh -> -20vh, scale & opacity match roughly */
+  @keyframes lca-rocket-flight {
+    0% {
+      transform: translate(-50%, 100vh) scale(0.3);
+      opacity: 0;
+    }
+    40% {
+      transform: translate(-50%, 45vh) scale(1);
+      opacity: 1;
+    }
+    100% {
+      transform: translate(-50%, -20vh) scale(0.6);
+      opacity: 0;
+    }
+  }
+  
+  /* Rocket body wobble */
+  .lca-rocket-svg {
+    animation: lca-rocket-wobble 0.5s ease-in-out infinite;
+    transform-origin: center;
+  }
+  
+  @keyframes lca-rocket-wobble {
+    0% { transform: rotate(0deg); }
+    25% { transform: rotate(-10deg); }
+    50% { transform: rotate(10deg); }
+    100% { transform: rotate(0deg); }
+  }
+  
+  /* Flames pulse */
+  .lca-flame {
+    animation: lca-flame-scale 0.3s ease-in-out infinite;
+    transform-origin: center top;
+  }
+  
+  .lca-flame-main {
+    animation-duration: 0.25s;
+    animation-delay: 0.1s;
+  }
+  
+  @keyframes lca-flame-scale {
+    0% { transform: scaleY(1); opacity: 1; }
+    50% { transform: scaleY(1.5); opacity: 0.6; }
+    100% { transform: scaleY(1); opacity: 1; }
+  }
+  
+  /* Particles */
+  .lca-particles {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  .lca-particle {
+    position: absolute;
+    border-radius: 999px;
+    will-change: transform, opacity;
+    animation: lca-particle-burst 1.5s ease-out forwards;
+  }
+  
+  @keyframes lca-particle-burst {
+    0% {
+      transform: translate(var(--start-x), 0) scale(0);
+      opacity: 0;
+    }
+    20% {
+      opacity: 1;
+    }
+    100% {
+      transform: translate(var(--end-x), var(--end-y)) scale(0);
+      opacity: 0;
+    }
+  }
+  
+  /* Central glow */
+  .lca-center-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: lca-center-glow 1.2s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes lca-center-glow {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(2.5);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(2);
+      opacity: 0.2;
+    }
+  }
+  
+  /* Multicolor glow */
+  .lca-multicolor-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    animation: lca-multi-glow 3s ease-in-out infinite;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes lca-multi-glow {
+    0% {
+      transform: translate(-50%, -50%) scale(1.5) rotate(0deg);
+      opacity: 0.2;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(2) rotate(180deg);
+      opacity: 0.4;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.5) rotate(360deg);
+      opacity: 0.2;
+    }
+  }
+  
+  /* Text content */
+  .lca-text-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 1rem;
+  }
+  
+  /* LEVEL UP */
+  .lca-title {
+    font-size: clamp(1.75rem, 3vw, 3rem);
+    font-weight: 700;
+    color: #ffffff;
+    text-shadow:
+      2px 2px 4px rgba(0,0,0,0.8),
+      0 0 8px rgba(0,0,0,0.6),
+      4px 4px 12px rgba(0,0,0,0.5);
+    animation: lca-title-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.6s both;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes lca-title-pop {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  /* Level number */
+  .lca-level {
+    font-size: clamp(3rem, 8vw, 6rem);
+    font-weight: 900;
+    color: #ffffff;
+    text-shadow:
+      3px 3px 6px rgba(0,0,0,0.9),
+      0 0 15px rgba(0,0,0,0.7),
+      6px 6px 20px rgba(0,0,0,0.6);
+    -webkit-text-stroke: 2px rgba(0,0,0,0.3);
+    animation: lca-level-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 0.8s both;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes lca-level-pop {
+    0% { transform: scale(0); opacity: 0; }
+    100% { transform: scale(1); opacity: 1; }
+  }
+  
+  /* Each digit stagger */
+  .lca-level-digit {
+    display: inline-block;
+    animation: lca-level-digit-drop 0.5s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+  }
+  
+  @keyframes lca-level-digit-drop {
+    0% { transform: translateY(50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  
+  /* Subtitle */
+  .lca-subtitle {
+    font-size: clamp(1.25rem, 3vw, 2rem);
+    font-weight: 700;
+    color: #ffffff;
+    animation: lca-subtitle-slide 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) 1.3s both;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes lca-subtitle-slide {
+    0% { transform: translateY(50px); opacity: 0; }
+    100% { transform: translateY(0); opacity: 1; }
+  }
+  
+  .lca-subtitle-glow {
+    animation: lca-subtitle-glow 2s ease-in-out infinite;
+  }
+  
+  @keyframes lca-subtitle-glow {
+    0%, 100% {
+      text-shadow:
+        2px 2px 4px rgba(0,0,0,0.8),
+        0 0 8px rgba(0,0,0,0.6);
+    }
+    50% {
+      text-shadow:
+        2px 2px 6px rgba(0,0,0,0.9),
+        0 0 12px rgba(0,0,0,0.7);
+    }
+  }
+  
+  /* Mobile tweaks */
+  @media (max-width: 768px) {
+    @keyframes lca-ring-expand {
+      100% {
+        width: 400px;
+        height: 400px;
+        opacity: 0;
+      }
+    }
+  
+    @keyframes lca-rocket-flight {
+      0% {
+        transform: translate(-50%, 100vh) scale(0.3);
+      }
+      40% {
+        transform: translate(-50%, 55vh) scale(0.9);
+      }
+      100% {
+        transform: translate(-50%, -10vh) scale(0.6);
+      }
+    }
+  }
+  

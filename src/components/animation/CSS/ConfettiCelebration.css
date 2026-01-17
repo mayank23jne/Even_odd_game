@@ -1,0 +1,98 @@
+.confetti-celebration {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  
+  /* Background gradient */
+  .confetti-bg {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(254, 243, 199, 0.3) 0%, transparent 100%);
+    animation: confettiBgFadeIn 0.3s ease;
+  }
+  
+  @keyframes confettiBgFadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Title container */
+  .confetti-title-wrapper {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+  
+  /* Title with bounce animation */
+  .confetti-title {
+    font-size: 4rem;
+    font-weight: 900;
+    background: linear-gradient(90deg, #f97316, #ef4444, #ec4899);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: titleDrop 0.7s cubic-bezier(0.34, 1.56, 0.64, 1);
+    will-change: transform, opacity;
+  }
+  
+  /* Exact same bounce animation as Framer Motion */
+  @keyframes titleDrop {
+    0% {
+      transform: translateY(-100px) rotate(10deg);
+      opacity: 0;
+    }
+    60% {
+      transform: translateY(10px) rotate(-5deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+  }
+  
+  /* Falling confetti piece */
+  .confetti-piece {
+    position: absolute;
+    top: -5%;
+    animation: confettiFall ease-in forwards;
+    will-change: transform, opacity;
+  }
+  
+  /* Exact same falling animation */
+  @keyframes confettiFall {
+    0% {
+      transform: translateY(0) rotate(0deg);
+      opacity: 1;
+    }
+    100% {
+      transform: translateY(calc(100vh + 100px)) rotate(var(--rotation));
+      opacity: 0;
+    }
+  }
+  
+  /* Shape styles */
+  .confetti-rect {
+    width: 10px;
+    height: 15px;
+    border-radius: 2px;
+  }
+  
+  .confetti-circle {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .confetti-title {
+      font-size: 2.5rem;
+    }
+  }
+  

@@ -1,0 +1,237 @@
+.game-over-container {
+    position: fixed;
+    inset: 0;
+    z-index: 50;
+    overflow: hidden;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, rgba(30, 20, 60, 0.3) 0%, rgba(0, 0, 0, 0.5) 100%);
+    animation: fadeIn 0.3s ease;
+  }
+  
+  @keyframes fadeIn {
+    from { opacity: 0; }
+    to { opacity: 1; }
+  }
+  
+  /* Central glow effect */
+  .central-glow {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 384px;
+    height: 384px;
+    border-radius: 50%;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.5) 0%, transparent 70%);
+    filter: blur(60px);
+    animation: glowPulse 1.2s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes glowPulse {
+    0% {
+      transform: translate(-50%, -50%) scale(0);
+      opacity: 0;
+    }
+    50% {
+      transform: translate(-50%, -50%) scale(2);
+      opacity: 0.6;
+    }
+    100% {
+      transform: translate(-50%, -50%) scale(1.5);
+      opacity: 0.3;
+    }
+  }
+  
+  /* Shockwave ring */
+  .shockwave-ring {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    width: 100px;
+    height: 100px;
+    border-radius: 50%;
+    border: 4px solid rgba(102, 126, 234, 0.6);
+    animation: shockwaveExpand 1.5s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes shockwaveExpand {
+    0% {
+      width: 100px;
+      height: 100px;
+      opacity: 0;
+    }
+    50% {
+      opacity: 0.6;
+    }
+    100% {
+      width: 600px;
+      height: 600px;
+      opacity: 0;
+    }
+  }
+  
+  /* Particles container */
+  .particles-container {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+  
+  /* Individual particle */
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: particleBurst 2s ease-out forwards;
+    will-change: transform, opacity;
+  }
+  
+  /* Particle animation - uses CSS variables for positioning */
+  @keyframes particleBurst {
+    0% {
+      transform: translate(0, 0) scale(0);
+      opacity: 0;
+    }
+    50% {
+      opacity: 1;
+      transform: translate(
+        calc(var(--endX) * 1px), 
+        calc(var(--endY) * 1px)
+      ) scale(1.2);
+    }
+    100% {
+      transform: translate(
+        calc(var(--endX) * 1px), 
+        calc(var(--endY) * 1px)
+      ) scale(0);
+      opacity: 0;
+    }
+  }
+  
+  /* Text content container */
+  .text-content {
+    position: absolute;
+    inset: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 24px;
+  }
+  
+  /* Game Over text */
+  .game-over-text {
+    font-size: 4rem;
+    font-weight: 900;
+    color: white;
+    text-shadow: 0 0 20px #667eea, 0 0 40px #764ba2, 0 5px 20px rgba(0, 0, 0, 0.5);
+    animation: textPopIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes textPopIn {
+    0% {
+      transform: scale(0);
+      opacity: 0;
+    }
+    100% {
+      transform: scale(1);
+      opacity: 1;
+    }
+  }
+  
+  /* Individual letter animation */
+  .letter {
+    display: inline-block;
+    animation: letterDrop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) both;
+    will-change: transform, opacity;
+  }
+  
+  /* Stagger letters with CSS animation-delay */
+  .letter:nth-child(1) { animation-delay: 0.5s; }
+  .letter:nth-child(2) { animation-delay: 0.55s; }
+  .letter:nth-child(3) { animation-delay: 0.6s; }
+  .letter:nth-child(4) { animation-delay: 0.65s; }
+  .letter:nth-child(5) { animation-delay: 0.7s; }
+  .letter:nth-child(6) { animation-delay: 0.75s; }
+  .letter:nth-child(7) { animation-delay: 0.8s; }
+  .letter:nth-child(8) { animation-delay: 0.85s; }
+  .letter:nth-child(9) { animation-delay: 0.9s; }
+  
+  @keyframes letterDrop {
+    0% {
+      transform: translateY(-50px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Subtitle */
+  .subtitle-text {
+    font-size: 2rem;
+    font-weight: bold;
+    color: white;
+    text-shadow: 0 0 20px #667eea, 0 0 40px #764ba2, 0 5px 20px rgba(0, 0, 0, 0.5);
+    animation: textPopIn 0.8s cubic-bezier(0.34, 1.56, 0.64, 1) 0.3s both;
+    will-change: transform, opacity;
+  }
+  
+  @keyframes subtitleSlideUp {
+    0% {
+      transform: translateY(50px);
+      opacity: 0;
+    }
+    100% {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  }
+  
+  /* Subtitle glow effect */
+  .subtitle-glow {
+    animation: subtitleGlowPulse 2s ease-in-out infinite;
+  }
+  
+  @keyframes subtitleGlowPulse {
+    0%, 100% {
+      text-shadow: 0 0 10px rgba(167, 139, 250, 0.5);
+    }
+    50% {
+      text-shadow: 0 0 20px rgba(167, 139, 250, 0.8);
+    }
+  }
+  
+  /* Mobile optimizations */
+  @media (max-width: 768px) {
+    .game-over-text {
+      font-size: 3rem;
+    }
+    
+    .subtitle-text {
+      font-size: 1.5rem;
+    }
+    
+    .central-glow {
+      width: 256px;
+      height: 256px;
+    }
+    
+    .shockwave-ring {
+      animation-duration: 1.2s;
+    }
+    
+    @keyframes shockwaveExpand {
+      100% {
+        width: 400px;
+        height: 400px;
+        opacity: 0;
+      }
+    }
+  }
+  
