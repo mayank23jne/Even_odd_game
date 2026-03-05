@@ -70,9 +70,9 @@ interface AnimationOverlayProps {
     showGameOverAnimation: boolean;
     onGameOverAnimationComplete: () => void;
 
-    showLevelChange: boolean;
-    previousLevel: number;
-    onLevelChangeComplete: () => void;
+    showLevelChange?: boolean;
+    previousLevel?: number;
+    onLevelChangeComplete?: () => void;
 
     showGameFinishAnimation: boolean;
     onGameFinishComplete: () => void;
@@ -128,16 +128,7 @@ const AnimationOverlay = memo(({
                 </Suspense>
             </ErrorBoundary>
 
-            <ErrorBoundary>
-                <Suspense fallback={null}>
-                    {showLevelChange && (
-                        <LevelChangeAnimation
-                            level={previousLevel}
-                            onComplete={onLevelChangeComplete}
-                        />
-                    )}
-                </Suspense>
-            </ErrorBoundary>
+            {/* Level change animation removed as requested */}
 
             <ErrorBoundary>
                 <Suspense fallback={null}>

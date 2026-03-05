@@ -3,20 +3,21 @@ import GameLives from "@/components/game/GameLives";
 import GameScore from "@/components/game/GameScore";
 import YesNoQuestionCard from "@/components/game/YesNoQuestionCard";
 import { Question } from "@/types/game";
-import { memo } from "react";
-import GamePlay from "./GamePlay";
+import { memo, useState } from "react";
+import { X } from "lucide-react";
+import QuitGameModal from "./QuitGameModal";
+import { Button } from "@/components/ui/button";
 
 interface YesNoGamePlayProps {
   score: number;
   timeRemaining: number;
   totalTime: number;
   isPaused: boolean;
-  // question_type: string;
   lives: number;
   maxLives: number;
   currentQuestion: Question;
   currentQuestionIndex: number;
-  onAnswer: (answer: "yes" | "no") => void;
+  onAnswer: (answer: "option1" | "option2") => void;
   onNext: () => void;
   onExit: () => void;
 }
@@ -33,27 +34,35 @@ const YesNoGamePlay = memo(
     currentQuestionIndex,
     onAnswer,
     onNext,
+    onExit,
   }: YesNoGamePlayProps) => {
-    return (
-      <div className="min-h-screen p-4 relative overflow-hidden">
-        <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
-        <div className="absolute inset-0 bg-gradient-to-tl from-secondary/5 via-transparent to-primary/5" />
+    const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
-        <div className="max-w-4xl mx-auto py-1 sm:py-8 space-y-4 sm:space-y-6 relative z-10">
-          {/* Top Stats */}
-          <div className="glass rounded-xl p-2 sm:p-4 shadow-card border border-primary/20 min-h-[10vh]">
-            <div className="flex items-center justify-between gap-3 sm:gap-4">
-              <GameTimer
-                timeRemaining={timeRemaining}
-                totalTime={totalTime}
-                isPaused={isPaused}
-              />
-              <GameScore score={score} />
-              <GameLives lives={lives} maxLives={maxLives} />
+    return (
+      <div className="min-h-screen p-4 sm:p-6 relative overflow-hidden bg-[#fafafa]">
+        <div className="absolute inset-0 bg-gradient-to-br from-accent/15 via-background to-secondary/15" />
+        <div className="absolute inset-0 bg-gradient-to-tl from-accent/5 via-transparent to-secondary/5" />
+
+
+        <div className="max-w-4xl mx-auto py-8 sm:py-8 space-y-4 sm:space-y-8 relative z-10">
+          {/* Top Stats Header */}
+          <div className="glass rounded-xl p-2 sm:p-4 shadow-card border border-primary/20 bg-white/5 backdrop-blur-md">
+            <div className="flex items-center justify-between gap-2 sm:gap-4">
+              <div className="flex items-center justify-between  sm:gap-4 flex-1">
+                <GameTimer
+                  timeRemaining={timeRemaining}
+                  totalTime={totalTime}
+                  isPaused={isPaused}
+                />
+                <GameScore score={score} />
+                <GameLives lives={lives} maxLives={maxLives} />
+              </div>
+
+
             </div>
           </div>
 
-          {/* YES / NO Question */}
+          {/* YES / NO Question Context */}
           <YesNoQuestionCard
             question={currentQuestion}
             questionNumber={currentQuestionIndex + 1}

@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "39775445147",
+    "project_id": "even-odd-2dfeb",
+    "storage_bucket": "even-odd-2dfeb.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:39775445147:android:29c2eceb50fae78fbee63e",
+        "android_client_info": {
+          "package_name": "com.evenoddgame.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "39775445147-lv5i98cdrjcsqenjnmgl8sepnfg8uej7.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.evenoddgame.app",
+            "certificate_hash": "e6923f7499100272633fd55a592df48bbd546649"
+          }
+        },
+        {
+          "client_id": "39775445147-e6ik1trgf0ti232lg8t6n93i8q2vqcum.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD-a8JkMVpiAE8i0bmNfYrfBPLeyhDA11o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "39775445147-e6ik1trgf0ti232lg8t6n93i8q2vqcum.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

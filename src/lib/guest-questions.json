@@ -5,9 +5,9 @@
     "question_text": "Which is the odd one?",
     "option1": "https://i.pinimg.com/236x/6e/90/df/6e90df9a0b21e9b2f17a061be5042141.jpg",
     "option2": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRsgYy4tINJ3g6FZhcBvnwqcI1Aa0BliSJPWA&s",
-    "option3": "https://i.pinimg.com/474x/1d/d3/69/1dd369978c810ee43ec81d40d097672a.jpg",
-    "option4": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp7vkXMq7mZFRqRfEYW5f_eSFLDeqtaNYCCQ&s",
-    "answer": "option3",
+    "option3": "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQp7vkXMq7mZFRqRfEYW5f_eSFLDeqtaNYCCQ&s",
+    "option4": "https://i.pinimg.com/474x/1d/d3/69/1dd369978c810ee43ec81d40d097672a.jpg",
+    "answer": "option4",
     "explanation": "Only car."
   },
   {

@@ -3,33 +3,42 @@ import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom";
 import { useEffect, useState } from "react";
 import { auth } from "@/lib/api";
-import { Sparkles, Trophy, Brain, Heart } from "lucide-react";
+import { Sparkles, Trophy, Brain, Heart, LogOut, Gamepad2, Dices } from "lucide-react";
 import heroBg from "@/assets/hero-bg.jpg";
 import lotusAccent from "@/assets/lotus-accent.png";
+import LogoutConfirmModal from "@/components/game/LogoutConfirmModal";
 
 const Welcome = () => {
   const navigate = useNavigate();
   const [user, setUser] = useState<any>(null);
   const [selectedGame, setSelectedGame] = useState(null);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   useEffect(() => {
     setUser(auth.getUser());
   }, []);
 
-  const handleGuestPlay = () => {
-    navigate(`/game?mode=guest&type=odd-even`);
-
+  const handleLogout = () => {
+    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    window.location.reload();
   };
 
-const handlePlayGame = () => {
-  if (!selectedGame) return;
+  const handleGuestPlay = () => {
+    if (!selectedGame) return;
+    navigate(`/game?mode=guest&type=${selectedGame}`);
+  };
 
-  if (user) {
-    navigate(`/game?type=${selectedGame}`);
-  } else {
-    navigate(`/auth?type=${selectedGame}`);
-  }
-};
+  const handlePlayGame = () => {
+    if (!selectedGame) return;
+
+    if (user) {
+      navigate(`/game?type=${selectedGame}`);
+    } else {
+      navigate(`/auth?type=${selectedGame}`);
+    }
+  };
 
 
   const handleViewLeaderboard = () => {
@@ -46,6 +55,13 @@ const handlePlayGame = () => {
       }}
     >
       {/* Overlay */}
+      <LogoutConfirmModal
+        open={isLogoutModalOpen}
+        onOpenChange={setIsLogoutModalOpen}
+        onConfirm={handleLogout}
+      />
+
+      {/* Overlay */}
       <div className="absolute inset-0 bg-gradient-to-b from-primary/20 via-background/85 to-background/95" />
 
       {/* Floating lotus decorations */}
@@ -61,31 +77,31 @@ const handlePlayGame = () => {
         style={{ animationDelay: '1s' }}
       />
 
-      <div className="max-w-4xl w-full space-y-6 sm:space-y-8 relative z-10">
+      <div className="max-w-4xl w-full space-y-4 sm:space-y-8 relative z-10 px-2 sm:px-0">
         {/* Header */}
-        <div className="text-center space-y-4 animate-fade-in">
-          <div className="flex items-center justify-center gap-2 sm:gap-3 mb-4">
-            <Brain className="w-8 h-8 sm:w-12 sm:h-12 text-primary drop-shadow-lg" />
-            <h1 className="text-2xl sm:text-5xl md:text-7xl font-bold text-foreground drop-shadow-lg">
+        <div className="text-center space-y-2 sm:space-y-4 animate-fade-in">
+          <div className="flex items-center justify-center gap-1.5 min-[350px]:gap-2 sm:gap-3 mb-2 sm:mb-4">
+            <Brain className="w-5 h-5 min-[350px]:w-8 min-[350px]:h-8 sm:w-12 sm:h-12 text-primary drop-shadow-lg" />
+            <h1 className="text-[20px] min-[350px]:text-3xl sm:text-5xl md:text-7xl font-bold text-foreground drop-shadow-lg whitespace-nowrap">
               Jain Odd-Even
             </h1>
-            <Heart className="w-8 h-8 sm:w-12 sm:h-12 text-accent drop-shadow-lg" />
+            <Heart className="w-5 h-5 min-[350px]:w-8 min-[350px]:h-8 sm:w-12 sm:h-12 text-accent drop-shadow-lg" />
           </div>
-          <p className="text-base sm:text-xl md:text-2xl text-foreground/90 max-w-2xl mx-auto px-4">
+          <p className="text-sm sm:text-xl md:text-2xl text-foreground/90 max-w-2xl mx-auto px-4 leading-snug">
             Learn about Jainism through fun and thoughtful gameplay
           </p>
         </div>
 
         {/* Main Card */}
-        <Card className="p-6 sm:p-8 md:p-12 glass shadow-glow border-2 border-primary/20 animate-scale-in">
-          <div className="space-y-6 sm:space-y-8">
+        <Card className="p-4 sm:p-8 md:p-12 glass shadow-glow border-2 border-primary/20 animate-scale-in">
+          <div className="space-y-4 sm:space-y-8">
             {/* Game Description */}
-            <div className="text-center space-y-3">
-              <h2 className="text-xl sm:text-2xl md:text-3xl font-semibold text-foreground">
+            <div className="text-center space-y-1 sm:space-y-3">
+              <h2 className="text-lg sm:text-2xl md:text-3xl font-semibold text-foreground">
                 Find the Odd One Out!
               </h2>
-              <p className="text-muted-foreground text-base sm:text-lg max-w-xl mx-auto px-4">
-                Choose the different item from 4 options. Test your knowledge and learn something new with each question!
+              <p className="text-muted-foreground text-xs sm:text-lg max-w-xl mx-auto px-4">
+                Choose the different item from 4 options. Test your knowledge and learn something new!
               </p>
             </div>
 
@@ -115,33 +131,70 @@ const handlePlayGame = () => {
             </div>
 
             {/* Action Buttons */}
-            <div className="space-y-3 sm:space-y-4 animate-slide-up">
-              {user ? (
-                
-                <div className="space-y-3 sm:space-y-4">
-                  {/* Game Selection */}
-                  <div className="flex gap-3">
+            <div className="space-y-4 sm:space-y-6 animate-slide-up">
+              {/* Common Game Selection */}
+              <div className="space-y-2 sm:space-y-3">
+                {user && (
+                  <div className="flex items-center justify-between gap-3 py-1 animate-fade-in">
+                    <span className="text-sm sm:text-base font-medium text-foreground">
+                      Hello, <span className="text-primary font-bold">{user.name || user.email || 'Player'}</span>
+                    </span>
                     <Button
-                      variant={selectedGame === "odd-even" ? "default" : "outline"}
-                      className="flex-1 h-11  border-2 border-primary/50  text-sm font-semibold transition-smooth hover:bg-primary/10 transition-smooth"
-                      onClick={() => setSelectedGame("odd-even")}
+                      variant="ghost"
+                      size="sm"
+                      onClick={() => setIsLogoutModalOpen(true)}
+                      className="h-8 px-3 text-destructive hover:text-destructive hover:bg-destructive/10 gap-2 border border-destructive/20"
                     >
-                      Odd – Even
-                    </Button>
-
-                    <Button
-                      variant={selectedGame === "yes-no" ? "default" : "outline"}
-                      className="flex-1 h-11 text-sm  border-2 border-primary/50 font-semibold transition-smooth hover:bg-primary/10 transition-smooth"
-                      onClick={() => setSelectedGame("yes-no")}
-                    >
-                      Yes / No
+                      <LogOut className="w-4 h-4" />
+                      <span className="text-xs font-semibold">Logout</span>
                     </Button>
                   </div>
+                )}
 
+                <p className="text-[10px] sm:text-sm font-semibold text-center text-muted-foreground uppercase tracking-wider">
+                  Please Select Game Type
+                </p>
+                <div className="flex gap-3 sm:gap-4 mt-1">
+                  <Button
+                    variant={selectedGame === "odd-even" ? "default" : "outline"}
+                    className={`flex-1 h-12 sm:h-16 border border-primary/40 text-xs sm:text-base font-bold transition-all duration-300 ${selectedGame === "odd-even"
+                      ? "bg-primary text-primary-foreground shadow-glow scale-[1.02]"
+                      : "hover:bg-primary/5 hover:border-primary/60"
+                      }`}
+                    onClick={() => setSelectedGame("odd-even")}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="tracking-tight">Odd – Even</span>
+                      <div className={`p-1 rounded-md transition-colors ${selectedGame === "odd-even" ? "bg-white/20" : "bg-primary/10"}`}>
+                        <Gamepad2 className={`w-4 h-4 sm:w-5 sm:h-5 ${selectedGame === "odd-even" ? "text-white" : "text-primary"}`} />
+                      </div>
+                    </div>
+                  </Button>
+
+                  <Button
+                    variant={selectedGame === "yes-no" ? "default" : "outline"}
+                    className={`flex-1 h-12 sm:h-16 text-xs sm:text-base border border-primary/40 font-bold transition-all duration-300 ${selectedGame === "yes-no"
+                      ? "bg-primary text-primary-foreground shadow-glow scale-[1.02]"
+                      : "hover:bg-primary/5 hover:border-primary/60"
+                      }`}
+                    onClick={() => setSelectedGame("yes-no")}
+                  >
+                    <div className="flex items-center justify-center gap-2">
+                      <span className="tracking-tight">Yes / No</span>
+                      <div className={`p-1 rounded-md transition-colors ${selectedGame === "yes-no" ? "bg-white/20" : "bg-primary/10"}`}>
+                        <Dices className={`w-4 h-4 sm:w-5 sm:h-5 ${selectedGame === "yes-no" ? "text-white" : "text-primary"}`} />
+                      </div>
+                    </div>
+                  </Button>
+                </div>
+              </div>
+
+              {user ? (
+                <div className="space-y-3 sm:space-y-4 pt-1 sm:pt-2">
                   <Button
                     onClick={handlePlayGame}
                     disabled={!selectedGame}
-                    className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold shadow-glow transition-bounce hover:scale-105"
+                    className="w-full h-11 sm:h-14 text-base sm:text-lg font-semibold shadow-glow transition-bounce hover:scale-105"
                     size="lg"
                   >
                     Play Game
@@ -150,53 +203,65 @@ const handlePlayGame = () => {
                     <Button
                       onClick={handleViewLeaderboard}
                       variant="outline"
-                      className="flex-1 h-12 border-2 border-primary/50 hover:bg-primary/10 transition-smooth"
+                      className="flex-1 h-10 sm:h-12 border border-primary/50 hover:bg-primary/10 transition-smooth text-xs sm:text-sm"
                     >
-                      <Trophy className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <Trophy className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
                       Leaderboard
                     </Button>
                     <Button
                       onClick={() => navigate("/donate")}
                       variant="outline"
-                      className="flex-1 h-12 border-2 border-primary/50 hover:bg-primary/10 transition-smooth"
+                      className="flex-1 h-10 sm:h-12 border border-primary/50 hover:bg-primary/10 transition-smooth text-xs sm:text-sm"
                     >
-                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
                       Donate
                     </Button>
                   </div>
                 </div>
               ) : (
-                <div className="space-y-3 sm:space-y-4">
-                  <Button
-                    onClick={() => navigate("/auth")}
-                    className="w-full h-12 sm:h-14 text-base sm:text-lg font-semibold shadow-glow transition-bounce hover:scale-105"
-                    size="lg"
-                  >
-                    Sign Up / Login
-                  </Button>
+                <div className="space-y-3 sm:space-y-4 pt-1 sm:pt-2">
                   <Button
                     onClick={handleGuestPlay}
-                    variant="outline"
-                    className="w-full h-12 border-2 border-primary/50 hover:bg-primary/10 transition-smooth"
+                    disabled={!selectedGame}
+                    variant="default"
+                    className="w-full h-11 sm:h-14 text-base sm:text-lg font-semibold shadow-glow transition-bounce hover:scale-105"
                     size="lg"
                   >
-                    Play as Guest (5 questions only)
+                    Play as Guest
                   </Button>
-                  <div className="flex flex-row gap-3 sm:gap-4 ">
+
+                  <div className="relative">
+                    <div className="absolute inset-0 flex items-center">
+                      <span className="w-full border-t border-muted-foreground/10" />
+                    </div>
+                    <div className="relative flex justify-center text-[10px] uppercase">
+                      <span className="bg-background px-2 text-muted-foreground">Or</span>
+                    </div>
+                  </div>
+
+                  <Button
+                    onClick={() => navigate("/auth")}
+                    variant="outline"
+                    className="w-full h-10 sm:h-12 border border-primary/50 hover:bg-primary/10 transition-smooth text-xs sm:text-sm"
+                  >
+                    Sign Up / Login to Save Score
+                  </Button>
+
+                  <div className="flex flex-row gap-2 sm:gap-4">
                     <Button
                       onClick={handleViewLeaderboard}
                       variant="outline"
-                      className="flex-1 h-12 border-2 border-primary/50 hover:bg-primary/10 transition-smooth"
+                      className="flex-1 h-10 sm:h-12 border border-primary/50 hover:bg-primary/10 transition-smooth text-xs sm:text-sm"
                     >
-                      <Trophy className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <Trophy className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
                       Leaderboard
                     </Button>
                     <Button
                       onClick={() => navigate("/donate")}
                       variant="outline"
-                      className="flex-1 h-12 border-2 border-primary/50 hover:bg-primary/10 transition-smooth"
+                      className="flex-1 h-10 sm:h-12 border border-primary/50 hover:bg-primary/10 transition-smooth text-xs sm:text-sm"
                     >
-                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-2" />
+                      <Heart className="w-4 h-4 sm:w-5 sm:h-5 mr-1.5 sm:mr-2" />
                       Donate
                     </Button>
                   </div>

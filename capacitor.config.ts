@@ -6,12 +6,18 @@ const config: CapacitorConfig = {
   webDir: 'dist',
 
   server: {
-    cleartext: true,         
+    cleartext: true,
     allowNavigation: [
       "api.razorpay.com",
       "*.razorpay.com"
     ]
-  }
+  },
+  plugins: {
+    FirebaseAuthentication: {
+      skipNativeAuth: false,
+      providers: ["google.com"],
+    },
+  },
 };
 
 export default config;

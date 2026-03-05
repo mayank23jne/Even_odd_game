@@ -64,6 +64,18 @@ export const auth = {
   isAuthenticated: () => {
     return !!localStorage.getItem('auth_token');
   },
+
+  googleLogin: async (idToken: string) => {
+    const data = await apiCall('/auth/google', {
+      method: 'POST',
+      body: JSON.stringify({ idToken }),
+    });
+    if (data.token) {
+      localStorage.setItem('auth_token', data.token);
+      localStorage.setItem('user', JSON.stringify(data.user));
+    }
+    return data;
+  },
 };
 
 // Questions APIs
@@ -81,7 +93,10 @@ export const questions = {
 export const yesNoQuestions = {
   getAll: async (level?: number, limit: number = 50, offset: number = 0) => {
     const query = new URLSearchParams();
-    if (level) query.append('level', level.toString());
+    if (typeof level === "number" && !Number.isNaN(level)) {
+      query.append("level", String(level));
+    }
+
     query.append('limit', limit.toString());
     query.append('offset', offset.toString());
 
@@ -101,13 +116,14 @@ export const yesNoQuestions = {
 // Game Session APIs
 export const gameSessions = {
   create: async (sessionData: {
-    user_id: number;
     score: number;
-    questions_answered: number;
-    correct_answers: number;
-    time_taken: number;
+    questionsAnswered: number;
+    correctAnswers: number;
+    timeTaken: number;
+    livesUsed?: number;
+    level?: number;
   }) => {
-    return apiCall('/game/store-session', {
+    return apiCall('/game/end-game', {
       method: 'POST',
       body: JSON.stringify(sessionData),
     });
@@ -121,7 +137,7 @@ export const gameSessions = {
 // Monthly Scores APIs
 export const monthlyScores = {
   get: async (year: number, month: number) => {
-    return apiCall(`game/monthly-scores?year=${year}&month=${month}`);
+    return apiCall(`/users/monthly-score?year=${year}&month=${month}`);
   },
 
   upsert: async (scoreData: {
@@ -161,7 +177,7 @@ export const userStats = {
 // Leaderboard APIs
 export const leaderboard = {
   get: async (year: number, month: number, limit: number = 50) => {
-    return apiCall(`/leaderboard?year=${year}&month=${month}&limit=${limit}`);
+    return apiCall(`/users/leaderboard?year=${year}&month=${month}&limit=${limit}`);
   },
 };
 

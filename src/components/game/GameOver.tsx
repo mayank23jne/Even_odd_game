@@ -2,17 +2,19 @@ import { useRef, useState } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { useNavigate } from "react-router-dom"
-import { Trophy, Clock, CheckCircle, Target, Share2, Loader2, LogOut} from "lucide-react";
+import { Trophy, Clock, CheckCircle, Target, Share2, Loader2, LogOut } from "lucide-react";
 
 
 import { toast } from "sonner";
 import { Share } from "@capacitor/share";
 import html2canvas from "html2canvas";
 import { Filesystem, Directory } from "@capacitor/filesystem";
+import LogoutConfirmModal from "./LogoutConfirmModal";
 
 interface GameOverProps {
   score: number;
   gameWon: boolean;
+  endReason?: "win" | "time" | "lives" | null;
   questionsAnswered: number;
   questionsCorrect: number;
   timePlayed: number;
@@ -22,6 +24,7 @@ interface GameOverProps {
 const GameOver = ({
   score,
   gameWon,
+  endReason,
   questionsAnswered,
   questionsCorrect,
   timePlayed,
@@ -30,14 +33,15 @@ const GameOver = ({
   const navigate = useNavigate();
   const shareRef = useRef<HTMLDivElement>(null);
   const [isSharing, setIsSharing] = useState(false);
+  const [isLogoutModalOpen, setIsLogoutModalOpen] = useState(false);
 
   const handleLogout = () => {
-  localStorage.clear();   
-  localStorage.removeItem("token");
-  localStorage.removeItem("user");
-       // 🔥 FULL CLEAR
-  navigate("/", { replace: true }); // 🔁 Login page
-};
+    localStorage.clear();
+    localStorage.removeItem("token");
+    localStorage.removeItem("user");
+    // 🔥 FULL CLEAR
+    navigate("/", { replace: true }); // 🔁 Login page
+  };
 
 
   const handleShare = async () => {
@@ -87,9 +91,9 @@ const GameOver = ({
   return (
     <div className="min-h-screen p-4 relative overflow-hidden flex items-center justify-center">
       {/* Logout Button */}
-       {!isGuestMode && (
+      {!isGuestMode && (
         <button
-          onClick={handleLogout}
+          onClick={() => setIsLogoutModalOpen(true)}
           className="absolute top-7 right-7 z-20 p-2 rounded-full
                     bg-white/80 hover:bg-white shadow-md
                     text-destructive transition hover:scale-110"
@@ -97,7 +101,13 @@ const GameOver = ({
         >
           <LogOut className="w-5 h-5" />
         </button>
-       )} 
+      )}
+
+      <LogoutConfirmModal
+        open={isLogoutModalOpen}
+        onOpenChange={setIsLogoutModalOpen}
+        onConfirm={handleLogout}
+      />
 
       {/* Animated background */}
       <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
@@ -112,10 +122,10 @@ const GameOver = ({
                 <Trophy className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto text-secondary relative z-10" />
               </div>
               <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-                {gameWon ? "You Won!" : "Game Over"}
+                {endReason === "time" ? "Time is Over" : (gameWon ? "You Won!" : "Game Over")}
               </h1>
               <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-2">
-                {gameWon ? "You won the game!" : "Great effort! Here's how you did:"}
+                {endReason === "time" ? "You played good!" : (gameWon ? "You won the game!" : "Great effort! Here's how you did:")}
               </p>
             </div>
 
@@ -215,10 +225,10 @@ const GameOver = ({
             <Trophy className="w-12 h-12 sm:w-14 sm:h-14 md:w-16 md:h-16 mx-auto text-secondary relative z-10" />
           </div>
           <h1 className="text-2xl sm:text-3xl md:text-4xl lg:text-5xl font-bold text-foreground">
-            {gameWon ? "You Won!" : "Game Over"}
+            {endReason === "time" ? "Time is Over" : (gameWon ? "You Won!" : "Game Over")}
           </h1>
           <p className="text-sm sm:text-base md:text-lg text-muted-foreground px-2">
-            {gameWon ? "You won the game!" : "Great effort! Here's how you did:"}
+            {endReason === "time" ? "You played good!" : (gameWon ? "You won the game!" : "Great effort! Here's how you did:")}
           </p>
         </div>
 

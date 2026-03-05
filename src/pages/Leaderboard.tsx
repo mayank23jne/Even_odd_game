@@ -2,7 +2,7 @@ import { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
-import { leaderboard as leaderboardApi } from "@/lib/api";
+import { leaderboard as leaderboardApi, auth, monthlyScores } from "@/lib/api";
 import { ArrowLeft, Trophy, Medal, Award, Crown } from "lucide-react";
 import {
   Select,
@@ -29,8 +29,11 @@ const Leaderboard = () => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}`;
   });
+  const [user, setUser] = useState<any>(null);
+  const [userRank, setUserRank] = useState<{ rank: number; score: number; games: number } | null>(null);
 
   useEffect(() => {
+    setUser(auth.getUser());
     loadLeaderboard();
   }, [selectedMonth]);
 
@@ -40,6 +43,29 @@ const Leaderboard = () => {
       const [year, month] = selectedMonth.split("-").map(Number);
       const data = await leaderboardApi.get(year, month, 50);
       setLeaderboard(data || []);
+
+      // Find current user's rank
+      const currentUser = auth.getUser();
+      if (currentUser && data) {
+        const userIndex = data.findIndex((entry: any) => String(entry.user_id) === String(currentUser.id));
+        if (userIndex !== -1) {
+          setUserRank({
+            rank: userIndex + 1,
+            score: data[userIndex].total_score,
+            games: data[userIndex].games_played
+          });
+        } else {
+          // If not in top 50, fetch personal monthly score
+          const personalScores = await monthlyScores.get(year, month);
+          if (personalScores && personalScores.length > 0) {
+            setUserRank({
+              rank: 0, // Rank unknown if not in top 50
+              score: personalScores[0].total_score,
+              games: personalScores[0].games_played
+            });
+          }
+        }
+      }
     } catch (error) {
       console.error("Error loading leaderboard:", error);
     } finally {
@@ -50,7 +76,7 @@ const Leaderboard = () => {
   const getMonthOptions = () => {
     const options = [];
     const now = new Date();
-    for (let i = 0; i < 3; i++) {
+    for (let i = 0; i < 6; i++) {
       const date = new Date(now.getFullYear(), now.getMonth() - i, 1);
       const value = `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}`;
       const label = date.toLocaleString("default", {
@@ -116,20 +142,54 @@ const Leaderboard = () => {
               </p>
             </div>
 
+            {/* Your Rank Card */}
+            {!loading && user && userRank && (
+              <div className="bg-gradient-to-r from-primary/20 via-primary/10 to-transparent p-4 sm:p-6 rounded-2xl border-2 border-primary/30 animate-fade-in shadow-sm">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center gap-4">
+                    <div className="w-12 h-12 sm:w-16 sm:h-16 rounded-2xl bg-primary flex items-center justify-center shadow-glow rotate-3">
+                      <span className="text-2xl sm:text-3xl font-black text-white">
+                        {userRank.rank > 0 ? `#${userRank.rank}` : "?"}
+                      </span>
+                    </div>
+                    <div>
+                      <p className="text-xs sm:text-sm font-bold text-primary uppercase tracking-widest">Your Ranking</p>
+                      <h3 className="text-lg sm:text-xl font-black text-foreground">{user?.name || user?.full_name || "You"}</h3>
+                    </div>
+                  </div>
+                  <div className="text-right">
+                    <p className="text-2xl sm:text-3xl font-black text-primary">{userRank.score}</p>
+                    <p className="text-[10px] sm:text-xs font-bold text-muted-foreground uppercase">{userRank.games} Games Played</p>
+                  </div>
+                </div>
+              </div>
+            )}
+
             {/* Month Selector */}
-            <div className="flex justify-center">
+            <div className="flex items-center justify-center gap-3">
               <Select value={selectedMonth} onValueChange={setSelectedMonth}>
-                <SelectTrigger className="w-full sm:w-64">
+                <SelectTrigger className="w-full sm:w-64 h-12 rounded-xl border-2 border-primary/20 font-bold">
                   <SelectValue />
                 </SelectTrigger>
-                <SelectContent>
+                <SelectContent className="rounded-xl">
                   {getMonthOptions().map((option) => (
-                    <SelectItem key={option.value} value={option.value}>
+                    <SelectItem key={option.value} value={option.value} className="font-medium">
                       {option.label}
                     </SelectItem>
                   ))}
                 </SelectContent>
               </Select>
+              <Button
+                variant="outline"
+                size="icon"
+                onClick={loadLeaderboard}
+                className="h-12 w-12 rounded-xl border-2 border-primary/20 hover:bg-primary/10"
+                disabled={loading}
+              >
+                <div className={loading ? "animate-spin" : ""}>
+                  <Trophy className="w-5 h-5" />
+                </div>
+              </Button>
             </div>
 
             {/* Leaderboard List */}
@@ -147,41 +207,46 @@ const Leaderboard = () => {
                   </p>
                 </div>
               ) : (
-                leaderboard.map((entry, index) => (
-                  <div
-                    key={entry.user_id}
-                    className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 transition-smooth hover:scale-[1.02] hover:border-primary/50 animate-fade-in ${getRankClass(
-                      index
-                    )}`}
-                    style={{ animationDelay: `${index * 0.1}s` }}
-                  >
-                    {/* Rank */}
-                    <div className="flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full bg-primary/10 font-bold text-primary flex-shrink-0 relative">
-                      {getRankIcon(index) || `#${index + 1}`}
-                      {index < 3 && (
-                        <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-primary rounded-full animate-pulse" />
-                      )}
-                    </div>
+                leaderboard.map((entry, index) => {
+                  const isCurrentUser = user && String(entry.user_id) === String(user.id);
+                  return (
+                    <div
+                      key={entry.user_id}
+                      className={`flex items-center gap-3 sm:gap-4 p-3 sm:p-4 rounded-xl border-2 transition-all duration-300 hover:scale-[1.02] animate-fade-in ${isCurrentUser
+                        ? "bg-gradient-to-r from-primary/20 to-primary/5 border-primary shadow-[0_0_15px_rgba(249,115,22,0.1)] ring-1 ring-primary/20"
+                        : getRankClass(index)
+                        }`}
+                      style={{ animationDelay: `${index * 0.05}s` }}
+                    >
+                      {/* Rank
+                      <div className={`flex items-center justify-center w-10 h-10 sm:w-12 sm:h-12 rounded-full font-black flex-shrink-0 relative ${isCurrentUser ? "bg-primary text-white" : "bg-primary/10 text-primary"
+                        }`}>
+                        {getRankIcon(index) || `#${index + 1}`}
+                        {index < 3 && !isCurrentUser && (
+                          <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 bg-primary rounded-full animate-pulse" />
+                        )}
+                      </div> */}
 
-                    {/* User Info */}
-                    <div className="flex-1 min-w-0">
-                      <p className="font-semibold text-sm sm:text-base text-foreground truncate">
-                        {entry.full_name || "Anonymous Player"}
-                      </p>
-                      <p className="text-xs sm:text-sm text-muted-foreground">
-                        {entry.games_played} games
-                      </p>
-                    </div>
+                      {/* User Info */}
+                      <div className="flex-1 min-w-0">
+                        <p className="font-semibold text-sm sm:text-base text-foreground truncate">
+                          {entry.full_name || "Anonymous Player"}
+                        </p>
+                        <p className="text-xs sm:text-sm text-muted-foreground">
+                          {entry.games_played} games
+                        </p>
+                      </div>
 
-                    {/* Score */}
-                    <div className="text-right flex-shrink-0">
-                      <p className="text-xl sm:text-2xl font-bold text-primary">
-                        {entry.total_score}
-                      </p>
-                      <p className="text-xs text-muted-foreground">points</p>
+                      {/* Score */}
+                      <div className="text-right flex-shrink-0">
+                        <p className="text-xl sm:text-2xl font-bold text-primary">
+                          {entry.total_score}
+                        </p>
+                        <p className="text-xs text-muted-foreground">points</p>
+                      </div>
                     </div>
-                  </div>
-                ))
+                  );
+                })
               )}
             </div>
 

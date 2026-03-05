@@ -51,6 +51,8 @@ export const useGameAudio = () => {
     const playSound = useCallback(async (soundName: 'correct' | 'wrong' | 'levelup' | 'gameover' | 'gamewon') => {
         try {
             await NativeAudio.play({ assetId: soundName });
+            // Set volume right after starting play if not done during preload
+            await NativeAudio.setVolume({ assetId: soundName, volume: 0.4 });
         } catch (err) {
             console.log(`❌ NativeAudio ${soundName} Error:`, err);
             // Web fallback
@@ -61,16 +63,12 @@ export const useGameAudio = () => {
                 gameover: '/sounds/game-over.mp3',
                 gamewon: '/sounds/celebration.mp3',
             };
-            console.log(`webAudio0 ${webAudioMap[soundName]} Error:`, err);
 
             try {
-                console.log(`webAudio1 ${webAudioMap[soundName]} Error:`, err);
                 const audio = new Audio(webAudioMap[soundName]);
-                console.log(`webAudio2 ${webAudioMap[soundName]} Error:`, err);
+                audio.volume = 0.4;
                 audio.currentTime = 0;
-                console.log(`webAudio3 ${webAudioMap[soundName]} Error:`, err);
                 audio.play().catch(e => console.warn("Web Audio play failed", e));
-                console.log(`webAudio4 ${webAudioMap[soundName]} Error:`, err);
             } catch (webErr) {
                 console.log(`❌ Web ${soundName} Audio Error:`, webErr);
             }

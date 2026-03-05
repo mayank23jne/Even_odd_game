@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate, useSearchParams } from "react-router-dom";
-import { auth, questions as questionsApi } from "@/lib/api";
+import { auth, yesNoQuestions } from "@/lib/api";
 import { toast } from "sonner";
 import { useGameAudio } from "@/hooks/useGameAudio";
 import StartScreen from "@/components/game/StartScreen";
@@ -9,6 +9,10 @@ import AnimationOverlay from "@/components/game/AnimationOverlay";
 import { calculateScore, shuffleArray } from "@/lib/gameUtils";
 import GameOver from "@/components/game/GameOver";
 import { useBGMusicStore } from "@/store/useBGMusicStore";
+
+import { App as CapacitorApp } from '@capacitor/app';
+import { Capacitor } from '@capacitor/core';
+import YesNoGamePlay from "@/components/game/YesNoGamePlay";
 
 const MAX_LIVES = 3;
 
@@ -32,6 +36,56 @@ const YesNoGame = () => {
   const [gameStarted, setGameStarted] = useState(false);
   const [gameOver, setGameOver] = useState(false);
   const [gameWon, setGameWon] = useState(false);
+  const [appIsActive, setAppIsActive] = useState(true);
+
+  // appStateChange listener (background/foreground) to pause timer
+  useEffect(() => {
+    let appStateListener: any;
+    let pauseListener: any;
+    let resumeListener: any;
+
+    const handleVisibilityChange = () => {
+      const isActive = document.visibilityState === 'visible';
+      console.log('👁️ YesNoGame.tsx: Visibility changed:', isActive ? 'VISIBLE' : 'HIDDEN');
+      setAppIsActive(isActive);
+    };
+
+    // 1. Web Visibility API (Instant response for WebView)
+    document.addEventListener('visibilitychange', handleVisibilityChange);
+
+    // 2. Capacitor App State (Native platform specific)
+    if (Capacitor.isNativePlatform()) {
+      // Get initial state immediately
+      CapacitorApp.getState().then(({ isActive }) => {
+        console.log('📱 YesNoGame.tsx: Initial Capacitor state:', isActive ? 'FOREGROUND' : 'BACKGROUND');
+        setAppIsActive(isActive);
+      });
+
+      // Primary state listener
+      CapacitorApp.addListener('appStateChange', ({ isActive }) => {
+        console.log('📱 YesNoGame.tsx: appStateChange:', isActive ? 'FOREGROUND' : 'BACKGROUND');
+        setAppIsActive(isActive);
+      }).then(l => appStateListener = l);
+
+      // Backup listeners for older Android / edge cases
+      CapacitorApp.addListener('pause', () => {
+        console.log('📱 YesNoGame.tsx: App PAUSED');
+        setAppIsActive(false);
+      }).then(l => pauseListener = l);
+
+      CapacitorApp.addListener('resume', () => {
+        console.log('📱 YesNoGame.tsx: App RESUMED');
+        setAppIsActive(true);
+      }).then(l => resumeListener = l);
+    }
+
+    return () => {
+      document.removeEventListener('visibilitychange', handleVisibilityChange);
+      if (appStateListener) appStateListener.remove();
+      if (pauseListener) pauseListener.remove();
+      if (resumeListener) resumeListener.remove();
+    };
+  }, []);
 
   const [gameDuration] = useState(60);
   const [timeRemaining, setTimeRemaining] = useState(60);
@@ -50,13 +104,14 @@ const YesNoGame = () => {
   /** LOAD YES / NO QUESTIONS */
   const loadQuestions = useCallback(async () => {
     try {
-      const data = await questionsApi.getYesNo(); // 🔴 API for yes/no
+      const response = await yesNoQuestions.getAll();
+      const data = Array.isArray(response) ? response : (response.data || []);
       const shuffled = shuffleArray(data).map((q: any, i: number) => ({
-        id: q.id,
+        id: String(q.id),
         level: i + 1,
-        question_text: q.question,
-        correctAnswer: q.answer === true ? "yes" : "no",
-        explanation: q.explanation,
+        question_text: q.question_text || q.question,
+        correctAnswer: ((q.answer === true || q.answer === "yes" || q.correct_option === "option1") ? "yes" : "no") as "yes" | "no",
+        explanation: q.explanation || "",
       }));
 
       setQuestions(shuffled);
@@ -73,14 +128,20 @@ const YesNoGame = () => {
 
   /** TIMER */
   useEffect(() => {
-    if (!gameStarted || isPaused || gameOver) return;
+    if (!gameStarted || isPaused || gameOver || !appIsActive) return;
 
     const timer = setInterval(() => {
+      // Direct verification: If document is hidden, BAIL OUT immediately
+      if (document.hidden) {
+        console.log('🛑 [FORCE-STOP] YesNoGame Timer tick skipped - document.hidden is true');
+        return;
+      }
+
       setTimeRemaining(t => (t <= 0 ? 0 : t - 1));
     }, 1000);
 
     return () => clearInterval(timer);
-  }, [gameStarted, isPaused, gameOver]);
+  }, [gameStarted, isPaused, gameOver, appIsActive]);
 
   /** ANSWER HANDLER */
   const handleAnswer = useCallback(
@@ -126,6 +187,7 @@ const YesNoGame = () => {
   if (!gameStarted) {
     return (
       <StartScreen
+        isGuestMode={isGuestMode}
         maxLives={MAX_LIVES}
         onStart={startGame}
         onBack={() => navigate("/")}

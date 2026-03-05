@@ -10,6 +10,10 @@ export interface Question {
     options: Option[];
     correctAnswer: string;
     explanation: string;
+    hint?: string;
+    topic?: string;
+    description?: string;
+    correct_option?: string;
     // Original API fields might still be present if passed around, but for UI we focus on these
     answer?: string;
     option1?: string;

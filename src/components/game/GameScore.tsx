@@ -1,17 +1,17 @@
 import { Trophy } from "lucide-react";
 
 interface GameScoreProps {
-                                  score: number;
+  score: number;
 }
 
 const GameScore = ({ score }: GameScoreProps) => {
   return (
-    <div className="flex items-center gap-3 bg-gradient-card px-4 py-1 rounded-lg border border-border shadow-card">
-      <div>
-      <Trophy className="w-5 h-5 text-secondary" />
-      <p className="text-[10px] text-muted-foreground">Score</p>
+    <div className="flex items-center gap-2 sm:gap-3 bg-white/40 backdrop-blur-sm px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl border border-primary/20 shadow-inner group hover:scale-105 transition-all duration-300">
+      <div className="flex flex-col items-start leading-none gap-0.5">
+        <Trophy className="w-4 h-4 text-secondary group-hover:scale-110 transition-transform" />
+        <p className="text-[10px] font-bold text-muted-foreground uppercase tracking-wider">Score</p>
       </div>
-        <p className="text-2xl font-bold text-primary">{score}</p>
+      <p className="text-xl sm:text-2xl font-black text-primary font-mono">{score}</p>
     </div>
   );
 };

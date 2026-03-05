@@ -3,7 +3,8 @@ import { useEffect, useRef } from "react";
 import { Toaster as Sonner } from "@/components/ui/sonner";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
-import { Routes, Route, useNavigate } from "react-router-dom";
+import { GoogleOAuthProvider } from "@react-oauth/google";
+import { Routes, Route, useNavigate, useLocation } from "react-router-dom";
 import Welcome from "./pages/Welcome";
 import Auth from "./pages/Auth";
 import Game from "./pages/Game";
@@ -13,9 +14,9 @@ import NotFound from "./pages/NotFound";
 import { StatusBar } from '@capacitor/status-bar';
 import { Capacitor } from '@capacitor/core';
 // import { useBackgroundMusic } from "./hooks/useBackgroundMusic";
+// import { useBackgroundMusic } from "./hooks/useBackgroundMusic";
 import { App as CapacitorApp } from '@capacitor/app';
 import { useBGMusicStore } from "./store/useBGMusicStore";
-import { App as CapApp } from '@capacitor/app';
 
 const queryClient = new QueryClient();
 const App = () => {
@@ -52,7 +53,7 @@ const App = () => {
     let appStateListener: any;
 
     if (Capacitor.isNativePlatform()) {
-      CapApp.addListener('appStateChange', ({ isActive }) => {
+      CapacitorApp.addListener('appStateChange', ({ isActive }) => {
         console.log('📱 App state changed:', isActive ? 'FOREGROUND' : 'BACKGROUND');
 
         if (isActive) {
@@ -82,19 +83,33 @@ const App = () => {
     };
   }, [initialize, cleanup, startMusic, pause, resume]);
 
+  const location = useLocation();
+
   useEffect(() => {
-    const backHandler = CapacitorApp.addListener("backButton", ({ canGoBack }) => {
-      if (canGoBack) {
-        navigate(-1);
-      } else {
-        CapacitorApp.exitApp(); // 🔥 Home page pe ho → exit app
-      }
-    });
+    const handleBackButton = async () => {
+      const backHandler = await CapacitorApp.addListener("backButton", ({ canGoBack }) => {
+        // More robust check for the game route
+        if (window.location.pathname.startsWith('/game')) {
+          console.log('🛑 App.tsx: Game route detected via startsWith, skipping global back handler');
+          return;
+        }
+
+        if (canGoBack) {
+          navigate(-1);
+        } else {
+          CapacitorApp.exitApp();
+        }
+      });
+
+      return backHandler;
+    };
+
+    const handlerPromise = handleBackButton();
 
     return () => {
-      backHandler.remove();
+      handlerPromise.then(handler => handler.remove());
     };
-  }, []);
+  }, [navigate]); // navigate is stable, no need to add location here as we use window.location.pathname for current value
 
   useEffect(() => {
     const handleScroll = async () => {
@@ -131,19 +146,21 @@ const App = () => {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <TooltipProvider>
-        <Toaster />
-        <Sonner />
-        <Routes>
-          <Route path="/" element={<Welcome />} />
-          <Route path="/auth" element={<Auth />} />
-          <Route path="/game" element={<Game />} />
-          <Route path="/leaderboard" element={<Leaderboard />} />
-          <Route path="/donate" element={<Donate />} />
-          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-          <Route path="*" element={<NotFound />} />
-        </Routes>
-      </TooltipProvider>
+      <GoogleOAuthProvider clientId="39775445147-e6ik1trgf0ti232lg8t6n93i8q2vqcum.apps.googleusercontent.com">
+        <TooltipProvider>
+          <Toaster />
+          <Sonner />
+          <Routes>
+            <Route path="/" element={<Welcome />} />
+            <Route path="/auth" element={<Auth />} />
+            <Route path="/game" element={<Game />} />
+            <Route path="/leaderboard" element={<Leaderboard />} />
+            <Route path="/donate" element={<Donate />} />
+            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+            <Route path="*" element={<NotFound />} />
+          </Routes>
+        </TooltipProvider>
+      </GoogleOAuthProvider>
     </QueryClientProvider>
   )
 };

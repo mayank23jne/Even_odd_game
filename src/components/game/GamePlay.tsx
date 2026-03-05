@@ -1,11 +1,13 @@
 import { Button } from "@/components/ui/button";
 import { ArrowLeft } from "lucide-react";
 import GameTimer from "@/components/game/GameTimer";
-import GameLives from "@/components/game/GameLives";
+import GameLives from "../game/GameLives";
 import GameScore from "@/components/game/GameScore";
 import QuestionCard from "@/components/game/QuestionCard";
 import { Question } from "@/types/game";
-import { memo } from "react";
+import { memo, useState } from "react";
+import { X } from "lucide-react";
+import QuitGameModal from "./QuitGameModal";
 
 interface GamePlayProps {
     score: number;
@@ -34,10 +36,28 @@ const GamePlay = memo(({
     onNext,
     onExit
 }: GamePlayProps) => {
+    const [isQuitModalOpen, setIsQuitModalOpen] = useState(false);
     return (
         <div className="min-h-screen p-4 relative overflow-hidden">
             <div className="absolute inset-0 bg-gradient-to-br from-primary/10 via-background to-accent/10" />
             <div className="absolute inset-0 bg-gradient-to-tl from-secondary/5 via-transparent to-primary/5" />
+
+            {/* Quit Button
+            <button
+                onClick={() => setIsQuitModalOpen(true)}
+                className="absolute top-4 right-4 z-20 p-2 rounded-full
+                          bg-white/80 hover:bg-white shadow-md
+                          text-destructive transition hover:scale-110"
+                aria-label="Quit Game"
+            >
+                <X className="w-5 h-5" />
+            </button> */}
+
+            <QuitGameModal
+                open={isQuitModalOpen}
+                onOpenChange={setIsQuitModalOpen}
+                onConfirm={onExit}
+            />
 
             <div className="max-w-4xl mx-auto py-8 sm:py-8 space-y-4 sm:space-y-6 relative z-10">
                 {/* <div className="flex items-center justify-between flex-wrap gap-3 sm:gap-4 min-h-[10vh]">
@@ -59,7 +79,7 @@ const GamePlay = memo(({
                             totalTime={totalTime}
                             isPaused={isPaused}
                         />
-                         <GameScore score={score} />
+                        <GameScore score={score} />
                         <GameLives lives={lives} maxLives={maxLives} />
                     </div>
                 </div>

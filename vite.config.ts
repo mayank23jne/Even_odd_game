@@ -15,7 +15,10 @@ export default defineConfig(({ mode }) => ({
       '/api': {
         target: 'https://evenodd.api.jyada.in/',
         changeOrigin: true,
-        secure: false
+        secure: false,
+        onProxyReq: (proxyReq, req, res) => {
+          console.log('[DEBUG-VITE] Proxying request:', req.method, req.url);
+        }
       }
     }
   },
